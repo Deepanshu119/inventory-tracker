@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory List - Inventory Tracker</title>
+    <style>
+        /* Global Styles */
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --text-color: #333;
+            --text-light: #7f8c8d;
+            --border-radius: 4px;
+            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--primary-color);
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--secondary-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--box-shadow);
+        }
+
+        .navbar h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .navbar nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .navbar nav a {
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+        }
+
+        .navbar nav a:hover {
+            color: var(--light-color);
+        }
+
+        .navbar nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--light-color);
+            transition: width 0.3s ease;
+        }
+
+        .navbar nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Page Title Styles */
+        .page-title {
+            padding: 2rem 0;
+            text-align: center;
+            background-color: white;
+            margin-bottom: 2rem;
+            box-shadow: var(--box-shadow);
+        }
+
+        .page-title h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        .page-title p {
+            color: var(--text-light);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Search and Filter Styles */
+        .search-filter {
+            margin-bottom: 2rem;
+            padding: 0 2rem;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        #search-bar {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #search-bar:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        #category-filter {
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            background-color: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        #category-filter:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Table Styles */
+        .inventory-table {
+            padding: 0 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .table-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--dark-color);
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+
+        th:hover {
+            background-color: #e9ecef;
+        }
+
+        th::after {
+            content: '↕';
+            position: absolute;
+            right: 10px;
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Action Button Styles */
+        .delete-btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+            color: white;
+        }
+
+        /* Pagination Styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .pagination-btn {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .pagination-btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        /* Back Button Styles */
+        .back-btn {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .btn-back {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background-color: #d5dbdb;
+            color: var(--dark-color);
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        footer p {
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .navbar nav {
+                margin-top: 1rem;
+                gap: 1rem;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Rest of your HTML content remains the same -->
+    <!-- Navbar -->
+    <header class="navbar">
+        <h1>Inventory Tracker</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/add">Add Product</a>
+            <a href="/inventory">View Inventory</a>
+        </nav>
+    </header>
+
+    <!-- Page Title -->
+    <section class="page-title">
+        <h2>Inventory List</h2>
+        <p>View and manage your inventory items. Easily delete or update products. Filter and search for products in your inventory.</p>
+    </section>
+
+    <!-- Search and Filter Section -->
+    <section class="search-filter">
+        <div class="search-container">
+            <input type="text" id="search-bar" placeholder="Search Products" onkeyup="searchTable()">
+            <select id="category-filter" onchange="filterByCategory()">
+                <option value="">Filter by Category</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Home">Home</option>
+                <option value="Books">Books</option>
+                <!-- Add more categories as needed -->
+            </select>
+        </div>
+    </section>
+
+    <!-- Inventory Table -->
+    <section class="inventory-table">
+        <div class="table-container">
+            <table id="inventory-table">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">ID &#x2195;</th>
+                        <th onclick="sortTable(1)">Name &#x2195;</th>
+                        <th onclick="sortTable(2)">Category &#x2195;</th>
+                        <th onclick="sortTable(3)">Quantity &#x2195;</th>
+                        <th onclick="sortTable(4)">Price &#x2195;</th>
+                        <th onclick="sortTable(5)">Supplier &#x2195;</th>
+                        <th>Date Added</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>{{ product[0] }}</td>
+                        <td>{{ product[1] }}</td>
+                        <td>{{ product[2] }}</td>
+                        <td>{{ product[3] }}</td>
+                        <td>${{ product[4] }}</td>
+                        <td>{{ product[5] }}</td>
+                        <td>{{ product[6] }}</td>
+                        <td><a href="/delete/{{ product[0] }}" class="delete-btn">Delete</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Pagination Section -->
+    <section class="pagination">
+        <div class="pagination-controls">
+            <button class="pagination-btn" onclick="prevPage()">Previous</button>
+            <button class="pagination-btn" onclick="nextPage()">Next</button>
+        </div>
+    </section>
+
+    <!-- Back Button -->
+    <section class="back-btn">
+        <a href="/" class="btn-back">Back to Home</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Inventory Tracker | Made with ❤️ by Deepanshu Sharma</p>
+    </footer>
+
+    <!-- JavaScript for functionality -->
+    <script>
+        let currentPage = 1;
+        const rowsPerPage = 5;
+        const table = document.getElementById('inventory-table');
+        const searchBar = document.getElementById('search-bar');
+        const categoryFilter = document.getElementById('category-filter');
+
+        function searchTable() {
+            let filter = searchBar.value.toLowerCase();
+            let rows = table.getElementsByTagName('tr');
+            for (let i = 1; i < rows.length; i++) {
+                let cells = rows[i].getElementsByTagName('td');
+                let match = false;
+                for (let j = 0; j < cells.length - 1; j++) { // excluding the last column (action)
+                    if (cells[j] && cells[j].textContent.toLowerCase().indexOf(filter) > -1) {
+                        match = true;
+                        break;
+                    }
+                }
+                rows[i].style.display = match ? '' : 'none';
+            }
+        }
+
+        function filterByCategory() {
+            let filter = categoryFilter.value;
+            let rows = table.getElementsByTagName('tr');
+            for (let i = 1; i < rows.length; i++) {
+                let categoryCell = rows[i].getElementsByTagName('td')[2];
+                if (categoryCell) {
+                    if (filter === "" || categoryCell.textContent === filter) {
+                        rows[i].style.display = '';
+                    } else {
+                        rows[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+
+        function sortTable(n) {
+            const rows = table.rows;
+            let switching = true;
+            let shouldSwitch;
+            let dir = "asc"; // Set the sorting direction to ascending initially
+            while (switching) {
+                switching = false;
+                for (let i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    const x = rows[i].getElementsByTagName("TD")[n];
+                    const y = rows[i + 1].getElementsByTagName("TD")[n];
+                    if (dir === "asc" && x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    } else if (dir === "desc" && x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                } else {
+                    if (dir === "asc") {
+                        dir = "desc";
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        }
+
+        function nextPage() {
+            if (currentPage < numPages()) {
+                currentPage++;
+                showPage(currentPage);
+            }
+        }
+
+        function numPages() {
+            let rows = table.rows;
+            let numRows = rows.length - 1; // Excluding header row
+            return Math.ceil(numRows / rowsPerPage);
+        }
+
+        function showPage(page) {
+            let rows = table.rows;
+            let start = (page - 1) * rowsPerPage;
+            let end = start + rowsPerPage;
+            for (let i = 1; i < rows.length; i++) {
+                if (i > start && i <= end) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+
+        // Initialize the table with the first page of results
+        showPage(currentPage);
+    </script>
+</body>
+</html>

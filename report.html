@@ -1,0 +1,25 @@
+<!-- templates/report.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inventory Report</title>
+</head>
+<body>
+    <h1>Inventory Report</h1>
+    <table border="1">
+        <tr>
+            <th>ID</th><th>Name</th><th>Category</th><th>Quantity</th><th>Price</th><th>Supplier</th>
+        </tr>
+        {% for product in products %}
+        <tr>
+            <td>{{ product[0] }}</td>
+            <td>{{ product[1] }}</td>
+            <td>{{ product[2] }}</td>
+            <td>{{ product[3] }}</td>
+            <td>{{ product[4] }}</td>
+            <td>{{ product[5] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
